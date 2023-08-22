@@ -1,4 +1,10 @@
 ---
+params:
+  sizeCut: 130
+  includeDMEK: TRUE
+  includeDSAEK: TRUE
+  includeUT_DSAEK: TRUE
+  
 title: "Univariate analysis for UDD paper"
 author: "Alexis Derumigny"
 date: "`r Sys.Date()`"
@@ -45,9 +51,17 @@ source(paste0(myFolder,"Graft_cornea_code/functions_cleaning.R"))
 ```{r, echo=FALSE, results='asis', label="preparing the data frame"}
 result = knitr::knit_expand(file = "preparing_dataframe.Rmd")
 
-result_ = knitr::knit_child(
+if (interactive()){
+  result_ = knitr::knit(
     text = result, envir = globalenv(), quiet = TRUE)
+} else {
+  result_ = knitr::knit_child(
+    text = result, envir = globalenv(), quiet = TRUE)
+}
 
 cat(result_, sep = '\n')
 ```
+
+
+
 
