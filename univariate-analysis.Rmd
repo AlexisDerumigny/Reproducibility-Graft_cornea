@@ -64,34 +64,67 @@ cat(result_, sep = '\n')
 
 
 ```{r}
-nameVariable = "patient.age"
+vecVariables = c("patient.age", "WOMEN", "right.eye", "axial.eye.length",
+                 "average.keratometry", "k1", "k2",
+                 "PBK", "FECD", "second.graft", "kvirale",
+                 "general.anaesthesia", "triple.dmek", "first.surgery",
+                 "donor.age", "double.cut", "cutting.blade.thickness",
+                 "graft.without.marking","graft.with.a.simple.marking",
+                 "graft.with.double.marking", 
+                 "surgery.duration", "IrvingGass", "graft.rejection",
+                 "rebubbling", "X2nd.rebubbling", "central.detachment.of.the.graft.or..1.3",
+                 "failure.primary", "success",
+                 "preoperative.VA", "VA_logD8", "VA_logD15", 
+                 "VA_logM1", "VA_logM3", "VA_logM6","VA_logM12", "VA_logM24",
+                 "pachy_D15", "pachy_D8", "pachy_M1", "pachy_M2", "pachy_M3", 
+                 "pachy_M6", "pachy_preop", "pachy_Y1", "pachy_Y2",
+                 "ECD.preop", "ECD_D15", "ECD_D8", "ECD_M1", "ECD_M2", "ECD_M3", "ECD_M6", 
+                 "ECD_Y1", "ECD_Y2", "ECD_Y3", "ECD_Y4", "ECD_Y5")
 
-reg1 = lm(totalData.frame[,nameVariable] ~ totalData.frame$method)
-res = anova(reg1)
-res$`Pr(>F)`[1]
+df.univ = data.frame(
+  nameVariable = character(length(vecVariables)),
+  pval_all = numeric(length(vecVariables)),
+  pval_dsaek_utdsaek = numeric(length(vecVariables)),
+  pval_dmek_vs_all = numeric(length(vecVariables))
+)
 
-res = t.test(totalData.frame[totalData.frame$is.ut_dsaek == 1, nameVariable] , 
-       totalData.frame[totalData.frame$is.dsaek == 1, nameVariable])
-res$p.value
+for (iVariable in 1:length(vecVariables))
+{
+  df.univ$nameVariable[iVariable] <- nameVariable <- vecVariables[iVariable]
+  
+  is01variable = all.equal(sort(unique(totalData.frame[,nameVariable])) , c(0,1) )
+  
+  if (isTRUE(is01variable)){
+    try({
+    firstVariable = totalData.frame[, nameVariable]
+    tab = table(firstVariable, totalData.frame[,"method"])
+    res = chisq.test(x = tab)
+    df.univ$pval_all[iVariable] = res$p.value
+    
+    res = chisq.test(x = tab[,2:3])
+    df.univ$pval_dsaek_utdsaek[iVariable] = res$p.value
+    
+    res = chisq.test(x = cbind(tab[,1], tab[,2]+tab[,3]))
+    df.univ$pval_dmek_vs_all[iVariable] = res$p.value
+    })
+  } else {
+    try({
+    reg1 = lm(totalData.frame[,nameVariable] ~ totalData.frame$method)
+    res = anova(reg1)
+    df.univ$pval_all[iVariable] = res$`Pr(>F)`[1]
+    
+    res = t.test(totalData.frame[totalData.frame$is.ut_dsaek == 1, nameVariable] , 
+                 totalData.frame[totalData.frame$is.dsaek == 1, nameVariable])
+    df.univ$pval_dsaek_utdsaek[iVariable] = res$p.value
+    
+    res = t.test(totalData.frame[totalData.frame$is.dmek == 1, nameVariable] , 
+                 totalData.frame[totalData.frame$is.dmek == 0, nameVariable])
+    df.univ$pval_dmek_vs_all[iVariable] = res$p.value
+    })
+  } 
+}
 
-res = t.test(totalData.frame[totalData.frame$is.dmek == 1, nameVariable] , 
-       totalData.frame[totalData.frame$is.dmek == 0, nameVariable])
-res$p.value
-
-
-nameVariable = "WOMEN"
-
-firstVariable = totalData.frame[, nameVariable]
-tab = table(firstVariable, totalData.frame[,"method"])
-res = chisq.test(x = tab)
-res$p.value
-
-res = chisq.test(x = tab[,2:3])
-res$p.value
-
-res = chisq.test(x = cbind(tab[,1], tab[,2]+tab[,3]))
-res$p.value
-
+df.univ
 ```
 
 
