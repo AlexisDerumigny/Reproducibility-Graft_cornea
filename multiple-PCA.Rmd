@@ -29,7 +29,8 @@ library(ade4)
 library(adegraphics)
 
 # Loading cleaning functions
-source(paste0(here::here(),"/code/functions_cleaning-2023-01-23.R"))
+myFolder = "D:/applicationsNum/22 - Greffe cornee UT DSAEK/"
+source(paste0(myFolder,"Graft_cornea_code/functions_cleaning.R"))
 ```
 
 # Introduction
@@ -37,7 +38,7 @@ source(paste0(here::here(),"/code/functions_cleaning-2023-01-23.R"))
 ## Inclusion in the dataset
 
 ```{r, results="asis", warning=FALSE, label="loading data"}
-folder = here::here("data//")
+folder = paste0(myFolder, "data/")
 nameFile = "COMPARAISON DMEK DSAEK UT DSAEK jmp09092022 2023-01-17.xlsx"
 
 # nomTableaux = c("dmek", "dsaek", "ut_dsaek")
@@ -584,10 +585,10 @@ for (i in 1:nrow(df_normalizations) ){
   
   # nameScreePlot = paste("'Scree plot -", nameAnalysis.short, "'")
   
-  # out = c(out, knitr::knit_child('multiple-PCA-2021-03-12 section.Rmd'))
+  # out = c(out, knitr::knit_child('multiple-PCA-section.Rmd'))
   
-  # cat(knitr::asis_output(knitr::knit_child("multiple-PCA-2021-03-12 section.Rmd", quiet=TRUE)))
-  result = knitr::knit_expand(file = "multiple-PCA-2021-03-12 section.Rmd")
+  # cat(knitr::asis_output(knitr::knit_child("multiple-PCA-section.Rmd", quiet=TRUE)))
+  result = knitr::knit_expand(file = "multiple-PCA-section.Rmd")
   out[[i]] = result
   
 }
