@@ -1,0 +1,53 @@
+---
+title: "Univariate analysis for UDD paper"
+author: "Alexis Derumigny"
+date: "`r Sys.Date()`"
+
+output: 
+  bookdown::word_document2:
+    toc: true
+    fig_caption: true
+
+knit: |
+  (function(input, ...) {
+    rmarkdown::render(
+      input,
+      output_file = paste0(
+        xfun::sans_ext(input), '-', Sys.Date(), '.docx'
+      ),
+      envir = globalenv()
+    )
+  })
+---
+
+<!-- The knit command modifies the output file to add automatically the date. -->
+<!-- see https://bookdown.org/yihui/rmarkdown-cookbook/custom-knit.html -->
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+
+# Loading packages
+library(readxl)
+library(tidyverse)
+library(ggforce)
+library(ade4)
+library(adegraphics)
+
+# Loading cleaning functions
+myFolder = "D:/applicationsNum/22 - Greffe cornee UT DSAEK/"
+source(paste0(myFolder,"Graft_cornea_code/functions_cleaning.R"))
+```
+
+
+# Introduction
+
+```{r, echo=FALSE, results='asis', label="preparing the data frame"}
+result = knitr::knit_expand(file = "preparing_dataframe.Rmd")
+
+result_ = knitr::knit_child(
+    text = result, envir = globalenv(), quiet = TRUE)
+
+cat(result_, sep = '\n')
+```
+
