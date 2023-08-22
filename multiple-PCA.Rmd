@@ -7,9 +7,11 @@ params:
   
 header-includes:
   - \newcommand\latexcode[1]{#1}
+  
 title: "PCA for UDD paper"
 author: "Alexis Derumigny"
-date: "17/01/2023"
+date: "`r Sys.Date()`"
+
 output: 
   bookdown::word_document2:
     toc: true
