@@ -63,5 +63,35 @@ cat(result_, sep = '\n')
 ```
 
 
+```{r}
+nameVariable = "patient.age"
+
+reg1 = lm(totalData.frame[,nameVariable] ~ totalData.frame$method)
+res = anova(reg1)
+res$`Pr(>F)`[1]
+
+res = t.test(totalData.frame[totalData.frame$is.ut_dsaek == 1, nameVariable] , 
+       totalData.frame[totalData.frame$is.dsaek == 1, nameVariable])
+res$p.value
+
+res = t.test(totalData.frame[totalData.frame$is.dmek == 1, nameVariable] , 
+       totalData.frame[totalData.frame$is.dmek == 0, nameVariable])
+res$p.value
+
+
+nameVariable = "WOMEN"
+
+firstVariable = totalData.frame[, nameVariable]
+tab = table(firstVariable, totalData.frame[,"method"])
+res = chisq.test(x = tab)
+res$p.value
+
+res = chisq.test(x = tab[,2:3])
+res$p.value
+
+res = chisq.test(x = cbind(tab[,1], tab[,2]+tab[,3]))
+res$p.value
+
+```
 
 
