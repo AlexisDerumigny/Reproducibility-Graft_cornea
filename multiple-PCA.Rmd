@@ -29,6 +29,10 @@ knit: |
   })
 ---
 
+<!-- The knit command modifies the output file to add automatically the date. -->
+<!-- see https://bookdown.org/yihui/rmarkdown-cookbook/custom-knit.html -->
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 
