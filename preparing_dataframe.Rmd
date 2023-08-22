@@ -1,0 +1,304 @@
+
+<!-- This file prepares the dataframe, renames the column as needed and merges them. -->
+
+
+## Inclusion in the dataset
+
+```{r, results="asis", warning=FALSE, label="loading data"}
+folder = paste0(myFolder, "data/")
+nameFile = "COMPARAISON DMEK DSAEK UT DSAEK jmp09092022 2023-01-17.xlsx"
+
+# nomTableaux = c("dmek", "dsaek", "ut_dsaek")
+
+vecNumbersSheets =  c()
+nomTableaux = c()
+
+cat("Category | State\n")
+cat("---------|------\n")
+
+if (params$includeDMEK){
+  vecNumbersSheets = c(vecNumbersSheets, 1)
+  nomTableaux = c(nomTableaux, "dmek")
+  cat("DMEK | included\n")
+}
+if (params$includeDSAEK){
+  vecNumbersSheets = c(vecNumbersSheets, 2)
+  nomTableaux = c(nomTableaux, "dsaek")
+  cat("DSAEK | included\n")
+} else {
+  cat("DSAEK | not included\n")
+}
+if (params$includeUT_DSAEK){
+  vecNumbersSheets = c(vecNumbersSheets, 3)
+  if (params$sizeCut == 130){
+    nomTableaux = c(nomTableaux, "ut_dsaek")
+    cat("UT DSAEK | included with cut at $130 µm$\n")
+  } else if (params$sizeCut == 160){
+    nomTableaux = c(nomTableaux, "ut_dsaek")
+    cat("UT DSAEK | included with cut at $160 µm$\n")
+  }
+} else{
+  cat("UT DSAEK | not included\n")
+}
+
+stopifnot(length(nomTableaux) == length(vecNumbersSheets))
+
+listeTableaux = list()
+for (iTableau in 1:length(nomTableaux))
+{
+  listeTableaux[[iTableau]] <- 
+    data.frame(read_xlsx(
+      path = paste0(folder, nameFile),
+      sheet = paste0("Feuil", vecNumbersSheets[iTableau]),
+      col_types = "numeric"))
+  
+  listeTableaux[[iTableau]]$method <- nomTableaux[iTableau]
+}
+```
+
+
+## Variables list and description
+
+```{r, results="asis", warning=FALSE, label="renaming variables"}
+
+# to get the full variable list
+#
+# sort(unique(unlist(lapply(listeTableaux, colnames))))
+
+catCategory("General characteristics:")
+
+listeTableaux = listeTableaux %>%
+  updateColnames("woman","WOMAN") %>%
+  updateColnames("man","MAN") %>%
+  updateColnames("patient.age", "age") %>%
+  updateColnames("right.eye", "RIGHT.EYE") %>%
+  updateColnames("left.eye", "LEFT.EYE") %>%
+  updateColnames("second.graft", "SECOND.GRAFT")
+
+catCategory("Characteristics of the surgery:")
+
+listeTableaux = listeTableaux %>%
+  updateColnames("locoregional.anaesthesia", "loco.regional.anaesthesia") %>%
+  updateColnames("general.anaesthesia") %>%
+  updateColnames("surgery.duration", 
+                 c("surgical.procedure.duration..mn.",
+                   "PROCEDURE..duration..mn.")) %>%
+  updateColnames("cutting.blade.gradient")
+
+catCategory("Characteristics of the graft:")  
+
+listeTableaux = listeTableaux %>%
+  updateColnames("graft.age","graft.s.age") %>%
+  updateColnames("rebbubling", 
+                 c("graft.detachment.episode",
+                   "GRAFT.DETACHMENT.EPISOD") ) %>%
+  updateColnames("multiple.rebbubling", 
+                 c("multiple.graft.detachment.episod")) %>%
+  updateColnames("graft.rejection",  
+                 c("graft..rejection.episod") ) %>%
+  updateColnames("Stromal_marking",
+                 c("STROMAL.MARKING.OF.THE.GRAFT"), "for DMEK graft") %>%
+  updateColnames("failure", c("failure of transplant to restore quantifiable visual acuity",
+                              "echec", "graft.failure", "dsaek.failure")) %>%
+  updateColnames("failure.primary", "primary.graft.failure") %>%
+  updateColnames("success", "dsaek.success")
+  
+  
+catCategory("History of the graft:")  
+
+listeTableaux = listeTableaux %>%
+  updateColnames("1st DMEK", "primo.DMEK",
+                 paste("signifie que c'est la première greffe de type dmek",
+                       "réalisée, sans qu'aucune autre greffe de type dmek",
+                       "ou dsaek n'ait été réalisée au préalable") ) %>%
+  updateColnames("1st DSAEK", "primo.DSAEK") %>%
+  mergingColnames("second.graft",
+                  c("DMEK.post.dmek", "DSAEKpost.dmek", "DSAEKpost.dmek",
+                    "DSAEKpost.dsaek", "DSAEKpost.dsaek", "post.penetrating.keratoplasty",
+                    "DSAEKpost.kt", "post.kt", "DSAEK.POST.PKP", "surgery.post.dsaek",
+                    "surgery.post.dmek", "surgery.post.pkp")) %>%
+  # updateColnames("DMEK.post.dmek", NULL, 
+  #                paste("signifie que cette greffe dmek a été réalisée",
+  #                      "secondairement après une première greffe dmek",
+  #                      "qui n'a pas réussie")) %>%
+  deletingColnames(c("DMEK.post.dmek", "DSAEKpost.dmek", "DSAEKpost.dmek",
+                     "DSAEKpost.dsaek", "DSAEKpost.dsaek", "post.penetrating.keratoplasty",
+                     "DSAEKpost.kt", "post.kt", "DSAEK.POST.PKP", "surgery.post.dsaek",
+                     "surgery.post.dmek", "surgery.post.pkp"))
+# updateColnames("DSAEKpost.dmek") %>%
+# updateColnames("DSAEKpost.dsaek") %>%
+# updateColnames("DSAEKpost.kt") %>%
+# updateColnames("post.kt") %>%
+# select(-one_of("post.kt")) %>%
+# updateColnames("post.penetrating.keratoplasty")
+
+catCategory("Endothelial densities:")  
+
+listeTableaux = listeTableaux %>%
+  updateColnames("ECD.preop", c("preoperative.endothelial.cell.density",
+                                "endothelial.density.of.the.graft",
+                                "graft.endothelial.density..cell.mm2",
+                                "graft.endothelial.density..cell.mm2.",
+                                "graft.endothelial.density..cell.mm².",
+                                "GRAFT.ECD",
+                                "preoperative.ECD")) %>%
+  updateColnames("ECD_D8", c("ECD.D8")) %>%
+  updateColnames("ECD_D15", c("ECD.15D")) %>%
+  updateColnames("ECD_M1", c("ECD.1M", "ECDm1")) %>%
+  updateColnames("ECD_M2", c("ECD.2M")) %>%
+  updateColnames("ECD_M3", c("ECD.3M", "ECDm3")) %>%
+  updateColnames("ECD_M6", c("Endothelial.Density.6M",
+                             "endothelial.cell.density.m6",
+                             "endothelial.densitym6",
+                             "Endothelial.density..6M",
+                             "ECD.6M", "ECDm6")) %>%
+  updateColnames("ECD_Y1", c("Endothelial.Density.12M",
+                             "endothelial.cell.density12M",
+                             "endothelial.density12m",
+                             "ECD.12M")) %>%
+  updateColnames("ECD_Y2", c("Endothelial.Density.24M",
+                             "endothelial.cell.density.24.M",
+                             "endothelial.density24m",
+                             "ECD.24M")) %>%
+  updateColnames("ECD_Y3", c("Endothelial.Density.36M",
+                             "endothelial.cell.density.36.M",
+                             "endothelial.density36m",
+                             "ECD.36M")) %>%
+  updateColnames("ECD_Y4", c("Endothelial.Density.48M",
+                             "endothelial.cell.density.48.M",
+                             "endothelial.density48m",
+                             "ECD.48M")) %>%
+  updateColnames("ECD_Y5", c("ECD.5Y"))
+
+catCategory("Visual acuities in logMAR scale (not used directly in the PCA):") 
+
+listeTableaux = listeTableaux %>%
+  updateColnames("preoperative.VA", c("preoperative.Visual.Acuity",
+                                      "preoperative.Visual.Acuity..logmar",
+                                      "logmar.preop.va",
+                                      "preop.logmar",
+                                      "preoperative.VA")) %>%
+  deletingColnames("av.pre.op") %>%
+  updateColnames("VA_logD8", c("VAlogj8", "VAlog8j", "log8j", "VA.logj8", "VAlogD8")) %>%
+  updateColnames("VA_logD15", c("VAlogj15", "VAlog15j", "log15j", "VA.logj15", "VAlogD15")) %>%
+  updateColnames("VA_logM1", c("VAlog1m", "VAlog1M", "log1m", "VA.log1m", "VAlogM1")) %>%
+  updateColnames("VA_logM3", c("VAlog3m", "VAlog3M", "log3m", "VA.log3m", "VAlogM3")) %>%
+  updateColnames("VA_logM6", c("VAlog6m", "VAlog6M", "VAlogM6", "log6m", "VAlogM6")) %>%
+  updateColnames("VA_logM12", c("VAlog12M", "VAlog1a", "VAlog1Y", "log1a", "VAlogM12")) %>%
+  updateColnames("VA_logM24", c("VAlog24M", "VAlog2a", "log2a", "VAlog2Y", "VAlogM24"))
+
+catCategory("Visual acuities in decimal scale:")  
+
+listeTableaux = listeTableaux %>%
+  updateColnamesVA("VA_preop", "preoperative.VA") %>%
+  updateColnamesVA("VA_D8", "VA_logD8") %>%
+  updateColnamesVA("VA_D15", "VA_logD15") %>%
+  updateColnamesVA("VA_M1", "VA_logM1") %>%
+  updateColnamesVA("VA_M3", "VA_logM3") %>%
+  updateColnamesVA("VA_M6", "VA_logM6") %>%
+  updateColnamesVA("VA_M12", "VA_logM12") %>%
+  updateColnamesVA("VA_M24", "VA_logM24")
+
+catCategory("Graft thicknesses:")
+
+listeTableaux = listeTableaux %>%
+  updateColnames("preoperative DSAEK CGT", "graft.s.thickness") %>%
+  updateColnames("DSAEK CGT_D8", c("graft.thichkness8D","graft.thickness8D")) %>%
+  updateColnames("DSAEK CGT_D15", c("graft.thickness15D","graft.thikness15D")) %>%
+  updateColnames("DSAEK CGT_M1", c("graft.thickness1.M","graft.thickness1M")) %>%
+  updateColnames("DSAEK CGT_M3", c("graft.thickness.3.M","graft.thickness3M")) %>%
+  updateColnames("DSAEK CGT_M6", c("graft.thickness.6.M","graft.thickness6M")) %>%
+  updateColnames("DSAEK CGT_M12", c("graft.thickness12M")) %>%
+  updateColnames("DSAEK CGT_M24", c("graft.thickness24M"))
+# old name : CGT_preop
+
+
+catCategory("Graft pachymetry:")
+
+listeTableaux = listeTableaux %>%
+  updateColnames("DSAEK-CCT", "graft.s.central.pachymetry.greffon") %>%
+  deletingColnames("post.cutting.graft.pachymetry") %>%
+  updateColnames("pachy_preop", "PREOPERATIVE.PACHYMETRY") %>%
+  updateColnames("pachy_after_cut", "graft.pachymetry..after.cutting") %>%
+  updateColnames("pachy_D8", c("PACHY.D8", "graft.pachy.8D")) %>%
+  updateColnames("pachy_D15", c("PACHY.D15", "GRAFT.PACHY.D15")) %>%
+  updateColnames("pachy_M1", c("PACHY.M1", "GRAFT.PACHY.1M")) %>%
+  updateColnames("pachy_M2", c("PACHYM2")) %>%
+  updateColnames("pachy_M3", c("PACHY.M3", "GRAFT.PACHY.3M")) %>%
+  updateColnames("pachy_M6", c("PACHY.M6", "GRAFT.PACHY.6M")) %>%
+  updateColnames("pachy_Y1", c("PACHY.M12", "GRAFT.PACHY.12M")) %>%
+  updateColnames("pachy_Y2", c("PACHY.24M", "GRAFT.PACHY.24M")) %>%
+  deletingColnames("graft.pachymétry")
+
+
+catCategory("Other variables:")  
+
+listeTableaux = listeTableaux %>%
+  updateColnames("FECD","fuchs.endothelial.corneal.dystrophy") %>%
+  updateColnames("PBK",c("pseudophaquic.bullous.keratopathyKBP",
+                         "pseudophaquic.bullous.keratopathy",
+                         "PKB")) %>%
+  updateColnames("Triple.DMEK","phacodmek..dmek.cataract.surgery.") %>%
+  updateColnames("CME",c("cystoid.macular.edema.CME",
+                         "Cystoide.Macular.Edema.EMC")) %>%
+  updateColnames("kvirale", c("viralendothelila..keratopathy",
+                              "VIRAL.KERATOPATHY")) %>%
+  updateColnames("IrvingGass", c("IrVin.GASS.syndrome..Cystoid.Macular.Edema.",
+                                 "irvine.gass.syndrom..EMC.",
+                                 "irvine.gass.syndrom.equivalent.to.CME",
+                                 "IrVin.GASS.syndrom",
+                                 "IRVIN.GASS.SYFROM"))
+
+```
+
+
+```{r merging the data frames, results="asis"}
+
+totColnames = c()
+for (iTableau in 1:length(listeTableaux)){
+  totColnames = c(totColnames, colnames(listeTableaux[[iTableau]]))
+}
+totColnames = sort(unique(totColnames))
+
+# Merging the data frames
+totalData.frame = c()
+for (iTableau in 1:length(listeTableaux))
+{
+  colnames_loc = colnames( listeTableaux[[iTableau]] )
+  colnamesToReplace = totColnames[which(! (totColnames %in% colnames_loc))]
+  listeTableaux[[iTableau]][, colnamesToReplace] = NA
+  
+  totalData.frame = rbind(totalData.frame, listeTableaux[[iTableau]])
+}
+# totalData.frame$graft.age = as.numeric(totalData.frame$graft.age)
+# Removing empty column graft.rejection
+totalData.frame = totalData.frame[, - which(totColnames == "graft.rejection")] 
+
+# # Remove redundant columns
+# toRemove = c("IrVin.GASS.syndrome..Cystoid.Macular.Edema.", 
+#              "irvine.gass.syndrom..EMC.",
+#              "irvine.gass.syndrom.equivalent.to.CME")
+# if (any(toRemove %in% colnames(totalData.frame))){
+#   totalData.frame = totalData.frame[, - which(colnames(totalData.frame) %in% toRemove)]
+# }
+
+# Creation of indicator variables
+cat("* Group of observations:\n")
+if (params$includeDMEK){
+  totalData.frame$is.dmek = as.numeric(totalData.frame$method == "dmek")
+  cat("  + *is.dmek* = 1 if the observations belongs to the dmek group, else 0\n")
+}
+if (params$includeDSAEK){
+  totalData.frame$is.dsaek = as.numeric(totalData.frame$method == "dsaek")
+  cat("  + *is.dsaek*  = 1 if the observations belongs to the dsaek group, else 0\n")
+}
+if (params$includeUT_DSAEK){
+  totalData.frame$is.ut_dsaek = as.numeric(totalData.frame$method == "ut_dsaek")
+  cat("  + *is.ut_dsaek_preop* = 1 if the observations belongs to the ut_dsaek group, else 0\n")
+}
+
+vec_methods = totalData.frame[ , "method"]
+
+totColnames = colnames(totalData.frame)
+```
+
