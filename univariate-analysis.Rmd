@@ -82,10 +82,30 @@ vecVariables = c("patient.age", "WOMEN", "right.eye", "axial.eye.length",
                  "ECD_Y1", "ECD_Y2", "ECD_Y3", "ECD_Y4", "ECD_Y5")
 
 df.univ = data.frame(
-  nameVariable = character(length(vecVariables)),
-  pval_all = numeric(length(vecVariables)),
-  pval_dsaek_utdsaek = numeric(length(vecVariables)),
-  pval_dmek_vs_all = numeric(length(vecVariables))
+  nameVariable = as.character(rep(NA, length(vecVariables))),
+  is01variable = as.logical(rep(NA, length(vecVariables))),
+  
+  n_dmek = as.numeric(rep(NA, length(vecVariables))),
+  mean_dmek = as.numeric(rep(NA, length(vecVariables))),
+  sd_dmek = as.numeric(rep(NA, length(vecVariables))),
+  N_dmek = as.numeric(rep(NA, length(vecVariables))),
+  pct_dmek = as.numeric(rep(NA, length(vecVariables))),
+  
+  n_dsaek = as.numeric(rep(NA, length(vecVariables))),
+  mean_dsaek = as.numeric(rep(NA, length(vecVariables))),
+  sd_dsaek = as.numeric(rep(NA, length(vecVariables))),
+  N_dsaek = as.numeric(rep(NA, length(vecVariables))),
+  pct_dsaek = as.numeric(rep(NA, length(vecVariables))),
+  
+  n_ut_dsaek = as.numeric(rep(NA, length(vecVariables))),
+  mean_ut_dsaek = as.numeric(rep(NA, length(vecVariables))),
+  sd_ut_dsaek = as.numeric(rep(NA, length(vecVariables))),
+  N_ut_dsaek = as.numeric(rep(NA, length(vecVariables))),
+  pct_ut_dsaek = as.numeric(rep(NA, length(vecVariables))),
+  
+  pval_all = as.numeric(rep(NA, length(vecVariables))),
+  pval_dsaek_utdsaek = as.numeric(length(vecVariables)),
+  pval_dmek_vs_all = as.numeric(length(vecVariables))
 )
 
 for (iVariable in 1:length(vecVariables))
@@ -93,33 +113,75 @@ for (iVariable in 1:length(vecVariables))
   df.univ$nameVariable[iVariable] <- nameVariable <- vecVariables[iVariable]
   
   is01variable = all.equal(sort(unique(totalData.frame[,nameVariable])) , c(0,1) )
+  df.univ$is01variable[iVariable] = isTRUE(is01variable)
+  
+  df.univ$n_dmek[iVariable] = length(which(
+    totalData.frame$is.dmek == 1 & is.finite(totalData.frame[, nameVariable])))
+  
+  df.univ$n_dsaek[iVariable] = length(which(
+    totalData.frame$is.dsaek == 1 & is.finite(totalData.frame[, nameVariable])))
+  
+  df.univ$n_ut_dsaek[iVariable] = length(which(
+    totalData.frame$is.ut_dsaek == 1 & is.finite(totalData.frame[, nameVariable])))
+  
   
   if (isTRUE(is01variable)){
     try({
-    firstVariable = totalData.frame[, nameVariable]
-    tab = table(firstVariable, totalData.frame[,"method"])
-    res = chisq.test(x = tab)
-    df.univ$pval_all[iVariable] = res$p.value
-    
-    res = chisq.test(x = tab[,2:3])
-    df.univ$pval_dsaek_utdsaek[iVariable] = res$p.value
-    
-    res = chisq.test(x = cbind(tab[,1], tab[,2]+tab[,3]))
-    df.univ$pval_dmek_vs_all[iVariable] = res$p.value
+      observations = na.omit(totalData.frame[totalData.frame$is.dmek == 1, nameVariable])
+      df.univ$N_dmek[iVariable] = length(which(observations == 1))
+      df.univ$pct_dmek[iVariable] = 
+        df.univ$N_dmek[iVariable] / df.univ$n_dmek[iVariable] * 100
+      
+      observations = na.omit(totalData.frame[totalData.frame$is.dsaek == 1, nameVariable])
+      df.univ$N_dsaek[iVariable] = length(which(observations == 1))
+      df.univ$pct_dsaek[iVariable] = 
+        df.univ$N_dsaek[iVariable] / df.univ$n_dsaek[iVariable] * 100
+      
+      observations = na.omit(totalData.frame[totalData.frame$is.ut_dsaek == 1, nameVariable])
+      df.univ$N_ut_dsaek[iVariable] = length(which(observations == 1))
+      df.univ$pct_ut_dsaek[iVariable] = 
+        df.univ$N_ut_dsaek[iVariable] / df.univ$n_ut_dsaek[iVariable] * 100
+      
+      # Testing
+      
+      firstVariable = totalData.frame[, nameVariable]
+      tab = table(firstVariable, totalData.frame[,"method"])
+      res = chisq.test(x = tab)
+      df.univ$pval_all[iVariable] = res$p.value
+      
+      res = chisq.test(x = tab[,2:3])
+      df.univ$pval_dsaek_utdsaek[iVariable] = res$p.value
+      
+      res = chisq.test(x = cbind(tab[,1], tab[,2]+tab[,3]))
+      df.univ$pval_dmek_vs_all[iVariable] = res$p.value
     })
   } else {
     try({
-    reg1 = lm(totalData.frame[,nameVariable] ~ totalData.frame$method)
-    res = anova(reg1)
-    df.univ$pval_all[iVariable] = res$`Pr(>F)`[1]
-    
-    res = t.test(totalData.frame[totalData.frame$is.ut_dsaek == 1, nameVariable] , 
-                 totalData.frame[totalData.frame$is.dsaek == 1, nameVariable])
-    df.univ$pval_dsaek_utdsaek[iVariable] = res$p.value
-    
-    res = t.test(totalData.frame[totalData.frame$is.dmek == 1, nameVariable] , 
-                 totalData.frame[totalData.frame$is.dmek == 0, nameVariable])
-    df.univ$pval_dmek_vs_all[iVariable] = res$p.value
+      observations = na.omit(totalData.frame[totalData.frame$is.dmek == 1, nameVariable])
+      df.univ$mean_dmek[iVariable] = mean(observations)
+      df.univ$sd_dmek[iVariable] = sd(observations)
+      
+      observations = na.omit(totalData.frame[totalData.frame$is.dsaek == 1, nameVariable])
+      df.univ$mean_dsaek[iVariable] = mean(observations)
+      df.univ$sd_dsaek[iVariable] = sd(observations)
+      
+      observations = na.omit(totalData.frame[totalData.frame$is.ut_dsaek == 1, nameVariable])
+      df.univ$mean_ut_dsaek[iVariable] = mean(observations)
+      df.univ$sd_ut_dsaek[iVariable] = sd(observations)
+      
+      # Testing
+      
+      reg1 = lm(totalData.frame[,nameVariable] ~ totalData.frame$method)
+      res = anova(reg1)
+      df.univ$pval_all[iVariable] = res$`Pr(>F)`[1]
+      
+      res = t.test(totalData.frame[totalData.frame$is.ut_dsaek == 1, nameVariable] , 
+                   totalData.frame[totalData.frame$is.dsaek == 1, nameVariable])
+      df.univ$pval_dsaek_utdsaek[iVariable] = res$p.value
+      
+      res = t.test(totalData.frame[totalData.frame$is.dmek == 1, nameVariable] , 
+                   totalData.frame[totalData.frame$is.dmek == 0, nameVariable])
+      df.univ$pval_dmek_vs_all[iVariable] = res$p.value
     })
   } 
 }
