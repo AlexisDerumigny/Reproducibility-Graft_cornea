@@ -185,8 +185,12 @@ for (iVariable in 1:length(vecVariables))
     })
   } 
 }
+```
 
-df.univ
+
+```{r}
+df.univ %>% 
+  gt::gt()
 ```
 
 
