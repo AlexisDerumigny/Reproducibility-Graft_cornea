@@ -338,3 +338,85 @@ cat(unlist(res), sep = '\n')
 ```
 
 
+# Proportion of explained variance by certain variables
+
+
+```{r}
+id_selected_PCA = which(df_normalizations$PACHY & df_normalizations$BSCVA & df_normalizations$ECD)
+
+PCA = listPCA[[id_selected_PCA]]$res_pca
+
+selected_columns = c("is.dmek", "FECD", "is.ut_dsaek", "is.dsaek", "PBK",
+                     "preoperative.VA", "VA_logD8", "VA_logD15", 
+                     "VA_logM1", "VA_logM3", "VA_logM6","VA_logM12", "VA_logM24",
+                     "pachy_D15", "pachy_D8", "pachy_M1", "pachy_M2", "pachy_M3", 
+                     "pachy_M6", "pachy_preop", "pachy_Y1", "pachy_Y2")
+
+PC1 <- PCA$vectors[,1]
+names(PC1) <- colnames(X)
+
+Xpred = X
+
+for (i in 1:nrow(X)) {
+  for (j in 1:ncol(X)) {
+    if (is.na(Xpred[i,j])){
+      Xpred[i,j] = 0
+    }
+  }
+}
+
+# # Correction of PC1 for the normalization
+# PC1 = PC1 * modifNormPACHY * modifNormVA * modifNormECD
+
+which_columns = colnames(X) %in% selected_columns
+
+TotalVar = var(Xpred %*% PC1)
+ExplVar = var(Xpred[, which_columns] %*% PC1[which_columns])
+
+{
+cat("For the variables: ")
+cat(paste0(selected_columns, sep  = " "))
+cat("\nThe Total variance of PC1 is: ")
+cat(TotalVar)
+cat(". The Explained variance of PC1 is: ")
+cat(ExplVar)
+cat("  which is ")
+cat(ExplVar / TotalVar * 100)
+cat("%")
+}
+```
+
+
+```{r}
+selected_columns = c("ECD_D15", "ECD_D8", "ECD_M1", "ECD_M2", "ECD_M3", "ECD_M6", 
+                     "ECD_Y1", "ECD_Y2", "ECD_Y3", "ECD_Y4", "ECD_Y5", "gaz.sf6",
+                     "graft.with.double.marking", "graft.detachment")
+
+PC2 <- PCA$vectors[,2]
+names(PC2) <- colnames(X)
+
+# Correction of PC1 for the normalization
+# PC2 = PC2 * modifNormPACHY * modifNormVA * modifNormECD
+
+which_columns = colnames(X) %in% selected_columns
+
+# TotalVar = var(Xnorm %*% PC2)
+# ExplVar = var(Xnorm[, which_columns] %*% PC2[which_columns])
+
+TotalVar = var(Xpred %*% PC2)
+ExplVar = var(Xpred[, which_columns] %*% PC2[which_columns])
+
+{
+cat("For the variables: ")
+cat(paste0(selected_columns, sep  = " "))
+cat("\nThe Total variance of PC2 is: ")
+cat(TotalVar)
+cat(". The Explained variance of PC2 is: ")
+cat(ExplVar)
+cat("  which is ")
+cat(ExplVar / TotalVar * 100)
+cat("%")
+}
+```
+
+
