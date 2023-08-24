@@ -63,6 +63,8 @@ cat(result_, sep = '\n')
 ```
 
 
+# Univariate statistical analysis
+
 ```{r}
 vecVariables = c("patient.age", "WOMEN", "right.eye", "axial.eye.length",
                  "average.keratometry", "k1", "k2",
@@ -154,7 +156,7 @@ for (iVariable in 1:length(vecVariables))
       
       res = chisq.test(x = cbind(tab[,1], tab[,2]+tab[,3]))
       df.univ$pval_dmek_vs_all[iVariable] = res$p.value
-    })
+    }, silent = TRUE)
   } else {
     try({
       observations = na.omit(totalData.frame[totalData.frame$is.dmek == 1, nameVariable])
@@ -182,9 +184,20 @@ for (iVariable in 1:length(vecVariables))
       res = t.test(totalData.frame[totalData.frame$is.dmek == 1, nameVariable] , 
                    totalData.frame[totalData.frame$is.dmek == 0, nameVariable])
       df.univ$pval_dmek_vs_all[iVariable] = res$p.value
-    })
+    }, silent = TRUE)
   } 
 }
+
+df.univ$pval_dsaek_utdsaek[which(df.univ$pval_dsaek_utdsaek > 1)] <- NA
+df.univ$pval_dsaek_utdsaek[which(!is.finite(df.univ$pval_dsaek_utdsaek))] <- NA
+
+df.univ$pval_dmek_vs_all[which(df.univ$pval_dmek_vs_all > 1)] <- NA
+df.univ$pval_dmek_vs_all[which(!is.finite(df.univ$pval_dmek_vs_all))] <- NA
+
+df.univ$pval_all[which(df.univ$pval_all > 1)] <- NA
+df.univ$pval_all[which(!is.finite(df.univ$pval_all))] <- NA
+
+rm(is01variable)
 ```
 
 
