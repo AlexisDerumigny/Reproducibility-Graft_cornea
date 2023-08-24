@@ -202,8 +202,61 @@ rm(is01variable)
 
 
 ```{r}
-df.univ %>% 
-  gt::gt()
+df.univ %>%
+  mutate(
+    mean_sd_dmek = paste0(formatC(mean_dmek, digits = 3, format = "f"), "±",
+                          formatC(sd_dmek, digits = 3, format = "f")),
+    N_pct_dmek = paste0(N_dmek, " (",
+                        formatC(pct_dmek, digits = 1, format = "f"), ")"),
+    dmek = if_else(is01variable, N_pct_dmek, mean_sd_dmek),
+    
+    mean_sd_dsaek = paste0(formatC(mean_dsaek, digits = 3, format = "f"), "±",
+                           formatC(sd_dsaek, digits = 3, format = "f")),
+    N_pct_dsaek = paste0(N_dsaek, " (",
+                         formatC(pct_dsaek, digits = 1, format = "f"), ")"),
+    dsaek = if_else(is01variable, N_pct_dsaek, mean_sd_dsaek),
+    
+    mean_sd_ut_dsaek = paste0(formatC(mean_ut_dsaek, digits = 3, format = "f"), "±",
+                              formatC(sd_ut_dsaek, digits = 3, format = "f")),
+    N_pct_ut_dsaek = paste0(N_ut_dsaek, " (",
+                            formatC(pct_ut_dsaek, digits = 1, format = "f"), ")"),
+    ut_dsaek = if_else(is01variable, N_pct_ut_dsaek, mean_sd_ut_dsaek)
+  ) %>%
+  dplyr::select(nameVariable, n_dmek, dmek, n_dsaek, dsaek, n_ut_dsaek, ut_dsaek,
+                pval_all, pval_dsaek_utdsaek, pval_dmek_vs_all) %>%
+  gt::gt(
+    rowname_col = "nameVariable"
+  ) %>%
+  gt::fmt_number(
+    columns = pval_all,
+    rows = pval_all >= 0.001,
+    decimals = 3
+  ) %>%
+  gt::fmt_scientific(
+    columns = pval_all,
+    rows = pval_all < 0.001,
+    decimals = 3
+  ) %>%
+  gt::fmt_number(
+    columns = pval_dsaek_utdsaek,
+    rows = pval_dsaek_utdsaek >= 0.001,
+    decimals = 3
+  ) %>%
+  gt::fmt_scientific(
+    columns = pval_dsaek_utdsaek,
+    rows = pval_dsaek_utdsaek < 0.001,
+    decimals = 3
+  ) %>%
+  gt::fmt_number(
+    columns = pval_dmek_vs_all,
+    rows = pval_dmek_vs_all >= 0.001,
+    decimals = 3
+  ) %>%
+  gt::fmt_scientific(
+    columns = pval_dmek_vs_all,
+    rows = pval_dmek_vs_all < 0.001,
+    decimals = 3
+  )
 ```
 
 
