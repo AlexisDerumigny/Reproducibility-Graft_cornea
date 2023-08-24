@@ -91,8 +91,13 @@ for (i in 1:nrow(df_normalizations)){
 ```{r, echo=FALSE, results='asis', label="preparing the data frame"}
 result = knitr::knit_expand(file = "preparing_dataframe.Rmd")
 
-result_ = knitr::knit_child(
+if (interactive()){
+  result_ = knitr::knit(
     text = result, envir = globalenv(), quiet = TRUE)
+} else {
+  result_ = knitr::knit_child(
+    text = result, envir = globalenv(), quiet = TRUE)
+}
 
 cat(result_, sep = '\n')
 ```
@@ -311,21 +316,24 @@ for (i in 1:nrow(df_normalizations) ){
   
   # nameScreePlot = paste("'Scree plot -", nameAnalysis.short, "'")
   
-  # out = c(out, knitr::knit_child('multiple-PCA-section.Rmd'))
-  
-  # cat(knitr::asis_output(knitr::knit_child("multiple-PCA-section.Rmd", quiet=TRUE)))
   result = knitr::knit_expand(file = "multiple-PCA-section.Rmd")
   out[[i]] = result
   
 }
-# knitr::knit(text = result,)
-# paste(out, collapse='\n')
-# cat(knitr::knit_child(text = paste(unlist(out),sep = "\n"), quiet = FALSE))
-res <- lapply(out, function(x) {
-  knitr::knit_child(
-    text = x, envir = globalenv(), quiet = TRUE
-  )
-})
+
+if (interactive()){
+  res <- lapply(out, function(x) {
+    knitr::knit(
+      text = x, envir = globalenv(), quiet = TRUE
+    )
+  })
+} else {
+  res <- lapply(out, function(x) {
+    knitr::knit_child(
+      text = x, envir = globalenv(), quiet = TRUE
+    )
+  })
+}
 cat(unlist(res), sep = '\n')
 ```
 
