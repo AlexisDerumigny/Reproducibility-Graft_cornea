@@ -303,7 +303,21 @@ if (params$includeUT_DSAEK){
 }
 
 vec_methods = totalData.frame[ , "method"]
+```
 
+
+```{r}
+totalData.frame$Marking = if_else(
+  totalData.frame$graft.without.marking == 1,
+  "None",
+  if_else(totalData.frame$graft.with.a.simple.marking == 1,
+          "Simple", "Double")
+)
+
+```
+
+
+```{r}
 totColnames = colnames(totalData.frame)
 ```
 

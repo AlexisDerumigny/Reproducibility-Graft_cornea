@@ -258,3 +258,15 @@ t.test(data = totalData.frame, k2 ~ rebubbling)
 ```
 
 
+# Associations with ECD per marking
+
+
+```{r}
+reg_1 = lm(data = totalData.frame, ECD.preop ~ Marking)
+
+pairs(emmeans::emmeans(reg_1, ~Marking), adjust = "none")
+```
+
+
+
+
