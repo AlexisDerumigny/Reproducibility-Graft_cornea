@@ -9,11 +9,22 @@ header-includes:
   - \newcommand\latexcode[1]{#1}
 title: "Linear regressions for UDD paper"
 author: "Alexis Derumigny"
-date: "23/01/2023"
+date: "`r Sys.Date()`"
 output: 
   bookdown::word_document2:
     toc: true
     fig_caption: true
+
+knit: |
+  (function(input, ...) {
+    rmarkdown::render(
+      input,
+      output_file = paste0(
+        xfun::sans_ext(input), '-', Sys.Date(), '.docx'
+      ),
+      envir = globalenv()
+    )
+  })
 ---
 
 ```{r setup, include=FALSE}
