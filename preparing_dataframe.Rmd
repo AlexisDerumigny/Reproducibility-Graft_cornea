@@ -5,7 +5,7 @@
 ## Inclusion in the dataset
 
 ```{r, results="asis", warning=FALSE, label="loading data"}
-folder = paste0(myFolder, "data/")
+folder = paste0(myFolder, "/data/")
 nameFile = "COMPARAISON DMEK DSAEK UT DSAEK jmp09092022 2023-01-17.xlsx"
 
 # nomTableaux = c("dmek", "dsaek", "ut_dsaek")

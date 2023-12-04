@@ -41,8 +41,8 @@ library(ade4)
 library(adegraphics)
 
 # Loading cleaning functions
-myFolder = "D:/applicationsNum/22 - Greffe cornee UT DSAEK/"
-source(paste0(myFolder,"Graft_cornea_code/functions_cleaning.R"))
+myFolder = here::here()
+source("functions_cleaning.R")
 ```
 
 
