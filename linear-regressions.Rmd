@@ -262,9 +262,13 @@ t.test(data = totalData.frame, k2 ~ rebubbling)
 
 
 ```{r}
-reg_1 = lm(data = totalData.frame, ECD.preop ~ Marking)
+reg_1 = totalData.frame |>
+  select(all_of(c("ECD.preop", "ECD_M6", "ECD_Y1", "ECD_Y2", "Marking"))) |>
+  pivot_longer(cols = starts_with("ECD"), names_to = "Timepoint", values_to = "ECD",
+               values_drop_na = TRUE) |>
+  lm(formula = ECD ~ Marking * Timepoint)
 
-pairs(emmeans::emmeans(reg_1, ~Marking), adjust = "none")
+pairs(emmeans::emmeans(reg_1, ~Marking | Timepoint), adjust = "none")
 ```
 
 
