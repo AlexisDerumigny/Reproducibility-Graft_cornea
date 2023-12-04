@@ -207,14 +207,14 @@ listeTableaux = listeTableaux %>%
 catCategory("Graft thicknesses:")
 
 listeTableaux = listeTableaux %>%
-  updateColnames("preoperative DSAEK CGT", "graft.s.thickness") %>%
-  updateColnames("DSAEK CGT_D8", c("graft.thichkness8D","graft.thickness8D")) %>%
-  updateColnames("DSAEK CGT_D15", c("graft.thickness15D","graft.thikness15D")) %>%
-  updateColnames("DSAEK CGT_M1", c("graft.thickness1.M","graft.thickness1M")) %>%
-  updateColnames("DSAEK CGT_M3", c("graft.thickness.3.M","graft.thickness3M")) %>%
-  updateColnames("DSAEK CGT_M6", c("graft.thickness.6.M","graft.thickness6M")) %>%
-  updateColnames("DSAEK CGT_M12", c("graft.thickness12M")) %>%
-  updateColnames("DSAEK CGT_M24", c("graft.thickness24M"))
+  updateColnames("preoperative CGT", "graft.s.thickness") %>%
+  updateColnames("CGT_D8", c("graft.thichkness8D","graft.thickness8D")) %>%
+  updateColnames("CGT_D15", c("graft.thickness15D","graft.thikness15D")) %>%
+  updateColnames("CGT_M1", c("graft.thickness1.M","graft.thickness1M")) %>%
+  updateColnames("CGT_M3", c("graft.thickness.3.M","graft.thickness3M")) %>%
+  updateColnames("CGT_M6", c("graft.thickness.6.M","graft.thickness6M")) %>%
+  updateColnames("CGT_M12", c("graft.thickness12M")) %>%
+  updateColnames("CGT_M24", c("graft.thickness24M"))
 # old name : CGT_preop
 
 

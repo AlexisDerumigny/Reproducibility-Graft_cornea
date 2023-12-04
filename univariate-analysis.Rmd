@@ -81,7 +81,10 @@ vecVariables = c("patient.age", "WOMEN", "right.eye", "axial.eye.length",
                  "pachy_D15", "pachy_D8", "pachy_M1", "pachy_M2", "pachy_M3", 
                  "pachy_M6", "pachy_preop", "pachy_Y1", "pachy_Y2",
                  "ECD.preop", "ECD_D15", "ECD_D8", "ECD_M1", "ECD_M2", "ECD_M3", "ECD_M6", 
-                 "ECD_Y1", "ECD_Y2", "ECD_Y3", "ECD_Y4", "ECD_Y5")
+                 "ECD_Y1", "ECD_Y2", "ECD_Y3", "ECD_Y4", "ECD_Y5"
+                 # , "preoperative CGT", "CGT_D8", "CGT_D15", "CGT_M1", "CGT_M3",
+                 # "CGT_M6", "CGT_M12", "CGT_M24"
+                 )
 
 df.univ = data.frame(
   nameVariable = as.character(rep(NA, length(vecVariables))),
