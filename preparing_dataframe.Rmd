@@ -82,7 +82,8 @@ listeTableaux = listeTableaux %>%
   updateColnames("general.anaesthesia") %>%
   updateColnames("surgery.duration", 
                  c("surgical.procedure.duration..mn.",
-                   "PROCEDURE..duration..mn.")) %>%
+                   "PROCEDURE..duration..mn.",
+                   "SURGERY.DURATION")) %>%
   updateColnames("cutting.blade.gradient")
 
 catCategory("Characteristics of the graft:")  
@@ -92,6 +93,10 @@ listeTableaux = listeTableaux %>%
   updateColnames("rebbubling", 
                  c("graft.detachment.episode",
                    "GRAFT.DETACHMENT.EPISOD") ) %>%
+  updateColnames("graft.detachment", 
+                 c("centr.detachment.graft",
+                   "centr_detachment_graft",
+                   "central.detachment.of.the.graft.or..1.3") ) %>%
   updateColnames("multiple.rebbubling", 
                  c("multiple.graft.detachment.episod")) %>%
   updateColnames("graft.rejection",  
@@ -239,7 +244,6 @@ listeTableaux = listeTableaux %>%
                          "pseudophaquic.bullous.keratopathy",
                          "PKB")) %>%
   updateColnames("Triple.DMEK","phacodmek..dmek.cataract.surgery.") %>%
-  updateColnames("centr_detachment_graft","central.detachment.of.the.graft.or..1.3") %>%
   updateColnames("CME",c("cystoid.macular.edema.CME",
                          "Cystoide.Macular.Edema.EMC")) %>%
   updateColnames("kvirale", c("viralendothelila..keratopathy",
@@ -273,7 +277,7 @@ for (iTableau in 1:length(listeTableaux))
 }
 # totalData.frame$graft.age = as.numeric(totalData.frame$graft.age)
 # Removing empty column graft.rejection
-totalData.frame = totalData.frame[, - which(totColnames == "graft.rejection")] 
+# totalData.frame = totalData.frame[, - which(colnames(totalData.frame) == "graft.rejection")] 
 
 # # Remove redundant columns
 # toRemove = c("IrVin.GASS.syndrome..Cystoid.Macular.Edema.", 
