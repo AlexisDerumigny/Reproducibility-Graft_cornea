@@ -211,3 +211,50 @@ reg_F = lm(data = totalData.frame,
 summary(reg_F)
 ```
 
+
+
+# Associations with graft detachment or rebubbling
+
+
+## ECD per timepoint predicted by graft detachment
+
+```{r}
+t.test(data = totalData.frame, ECD.preop ~ graft.detachment)
+t.test(data = totalData.frame, ECD_M6 ~ graft.detachment)
+t.test(data = totalData.frame, ECD_Y1 ~ graft.detachment)
+t.test(data = totalData.frame, ECD_Y2 ~ graft.detachment)
+```
+
+
+
+## ECD per timepoint predicted by rebubbling
+
+```{r}
+t.test(data = totalData.frame, ECD.preop ~ rebubbling)
+t.test(data = totalData.frame, ECD_M6 ~ rebubbling)
+t.test(data = totalData.frame, ECD_Y1 ~ rebubbling)
+t.test(data = totalData.frame, ECD_Y2 ~ rebubbling)
+```
+
+
+
+
+## Keratometry per timepoint predicted by graft detachment
+
+```{r}
+t.test(data = totalData.frame, average.keratometry ~ graft.detachment)
+t.test(data = totalData.frame, k1 ~ graft.detachment)
+t.test(data = totalData.frame, k2 ~ graft.detachment)
+```
+
+
+
+## Keratometry per timepoint predicted by rebubbling
+
+```{r}
+t.test(data = totalData.frame, average.keratometry ~ rebubbling)
+t.test(data = totalData.frame, k1 ~ rebubbling)
+t.test(data = totalData.frame, k2 ~ rebubbling)
+```
+
+
