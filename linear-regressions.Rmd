@@ -273,4 +273,36 @@ pairs(emmeans::emmeans(reg_1, ~Marking | Timepoint), adjust = "none")
 
 
 
+# Associations with SF6
+
+## ECD predicted by SF6 for each Timepoint
+
+```{r}
+totalData.frame$SF6 = if_else(
+  totalData.frame$gaz.sf6 == 1,
+  "SF6", "Air"
+)
+
+reg_2 = totalData.frame |>
+  select(all_of(c("ECD.preop", "ECD_M6", "ECD_Y1", "ECD_Y2", "Marking", "SF6"))) |>
+  pivot_longer(cols = starts_with("ECD"), names_to = "Timepoint", values_to = "ECD",
+               values_drop_na = TRUE) |>
+  lm(formula = ECD ~ SF6 * Timepoint)
+
+pairs(emmeans::emmeans(reg_2, ~SF6 | Timepoint), adjust = "none")
+```
+
+
+## ECD predicted by SF6 and Marking for each Timepoint
+
+
+```{r}
+reg_3 = totalData.frame |>
+  select(all_of(c("ECD.preop", "ECD_M6", "ECD_Y1", "ECD_Y2", "Marking", "SF6"))) |>
+  pivot_longer(cols = starts_with("ECD"), names_to = "Timepoint", values_to = "ECD",
+               values_drop_na = TRUE) |>
+  lm(formula = ECD ~ Marking * SF6 * Timepoint)
+
+pairs(emmeans::emmeans(reg_3, ~Marking + SF6 | Timepoint), adjust = "none")
+```
 
