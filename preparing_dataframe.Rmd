@@ -243,7 +243,9 @@ listeTableaux = listeTableaux %>%
   updateColnames("PBK",c("pseudophaquic.bullous.keratopathyKBP",
                          "pseudophaquic.bullous.keratopathy",
                          "PKB")) %>%
-  updateColnames("Triple.DMEK","phacodmek..dmek.cataract.surgery.") %>%
+  updateColnames("Triple.DMEK", c("phacodmek..dmek.cataract.surgery.", 
+                                  "phaco.DSAEK",
+                                  "triple.dmek")) %>%
   updateColnames("CME",c("cystoid.macular.edema.CME",
                          "Cystoide.Macular.Edema.EMC")) %>%
   updateColnames("kvirale", c("viralendothelila..keratopathy",

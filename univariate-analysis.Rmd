@@ -69,7 +69,7 @@ cat(result_, sep = '\n')
 vecVariables = c("patient.age", "WOMEN", "right.eye", "axial.eye.length",
                  "average.keratometry", "k1", "k2",
                  "PBK", "FECD", "second.graft", "kvirale", "gaz.sf6",
-                 "general.anaesthesia", "triple.dmek", "first.surgery",
+                 "general.anaesthesia", "Triple.DMEK", "first.surgery",
                  "donor.age", "double.cut", "cutting.blade.thickness",
                  "graft.without.marking","graft.with.a.simple.marking",
                  "graft.with.double.marking", 
