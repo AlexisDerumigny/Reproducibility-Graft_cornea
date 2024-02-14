@@ -110,7 +110,8 @@ toRemove = which( totColnames %in% c(
   "VA_logD15" , "VA_logM1"  , "VA_logM3"  ,
   "VA_logM6"  , "VA_logM12" , "VA_logM24" ))
 
-X = as.matrix(totalData.frame[, - toRemove])
+X = as.matrix(totalData.frame[, - toRemove] |> 
+                     apply(FUN = \(x) {suppressWarnings(as.numeric(x))}, MARGIN = c(1:2)))
 # Removing unnecessary columns
 Xnorm = matrix(nrow = nrow(X), ncol = ncol(X))
 for (j in 1:ncol(X)){
