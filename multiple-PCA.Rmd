@@ -152,8 +152,11 @@ variablesECD =
     "ECD_M6", "ECD_Y1", "ECD_Y2", "ECD_Y3", "ECD_Y4")
 
 variablesPACHY =
-  c("pachy_preop", "pachy_after_cut", "pachy_D8", "pachy_M1", "pachy_M2", "pachy_M3",
-    "pachy_M6", "pachy_Y1", "pachy_Y2")
+  c("pachy_preop", "pachy_after_cut",
+    # Variables only for DMEK
+    "CCT_D8", "CCT_D15","CCT_M1","CCT_M2","CCT_M3","CCT_M6","CCT_Y1","CCT_Y2",
+    # Variables only for DSAEK
+    "CGT_D8","CGT_D15","CGT_M1","CGT_M3","CGT_M6","CGT_Y1","CGT_Y2")
 
 getModifNorm <- function(X, variablesToBeChanged){
   whereVariables = colnames(X) %in% variablesToBeChanged
@@ -351,8 +354,7 @@ PCA = listPCA[[id_selected_PCA]]$res_pca
 selected_columns = c("is.dmek", "FECD", "is.ut_dsaek", "is.dsaek", "PBK",
                      "preoperative.VA", "VA_logD8", "VA_logD15", 
                      "VA_logM1", "VA_logM3", "VA_logM6","VA_logM12", "VA_logM24",
-                     "pachy_D15", "pachy_D8", "pachy_M1", "pachy_M2", "pachy_M3", 
-                     "pachy_M6", "pachy_preop", "pachy_Y1", "pachy_Y2")
+                     variablesPACHY)
 
 PC1 <- PCA$vectors[,1]
 names(PC1) <- colnames(X)

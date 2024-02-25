@@ -107,8 +107,8 @@ listeTableaux = listeTableaux %>%
                               "echec", "graft.failure", "dsaek.failure")) %>%
   updateColnames("failure.primary", "primary.graft.failure") %>%
   updateColnames("success", "dsaek.success")
-  
-  
+
+
 catCategory("History of the graft:")  
 
 listeTableaux = listeTableaux %>%
@@ -204,27 +204,13 @@ listeTableaux = listeTableaux %>%
   updateColnamesVA("VA_M12", "VA_logM12") %>%
   updateColnamesVA("VA_M24", "VA_logM24")
 
-catCategory("Graft thicknesses:")
-
-listeTableaux = listeTableaux %>%
-  updateColnames("preoperative CGT", "graft.s.thickness") %>%
-  updateColnames("CGT_D8", c("graft.thichkness8D","graft.thickness8D")) %>%
-  updateColnames("CGT_D15", c("graft.thickness15D","graft.thikness15D")) %>%
-  updateColnames("CGT_M1", c("graft.thickness1.M","graft.thickness1M")) %>%
-  updateColnames("CGT_M3", c("graft.thickness.3.M","graft.thickness3M")) %>%
-  updateColnames("CGT_M6", c("graft.thickness.6.M","graft.thickness6M")) %>%
-  updateColnames("CGT_M12", c("graft.thickness12M")) %>%
-  updateColnames("CGT_M24", c("graft.thickness24M"))
-# old name : CGT_preop
-
 
 catCategory("Graft pachymetry:")
 
 listeTableaux = listeTableaux %>%
-  updateColnames("DSAEK-CCT", "graft.s.central.pachymetry.greffon") %>%
-  deletingColnames("post.cutting.graft.pachymetry") %>%
   updateColnames("pachy_preop", "PREOPERATIVE.PACHYMETRY") %>%
-  updateColnames("pachy_after_cut", "graft.pachymetry..after.cutting") %>%
+  updateColnames("pachy_after_cut", c("graft.pachymetry..after.cutting",
+                                      "post.cutting.graft.pachymetry")) %>%
   updateColnames("pachy_D8", c("PACHY.D8", "graft.pachy.8D")) %>%
   updateColnames("pachy_D15", c("PACHY.D15", "GRAFT.PACHY.D15")) %>%
   updateColnames("pachy_M1", c("PACHY.M1", "GRAFT.PACHY.1M")) %>%
@@ -316,6 +302,34 @@ totalData.frame$Marking = if_else(
           "Simple", "Double")
 )
 
+```
+
+
+```{r separating DSAEK and DMEK pachy}
+totalData.frame = totalData.frame |>
+  mutate(
+    # Variables only for DMEK
+    CCT_D8 = if_else(is.dmek == 1, true = pachy_D8, false = NA),
+    CCT_D15 = if_else(is.dmek == 1, true = pachy_D15, false = NA),
+    CCT_M1 = if_else(is.dmek == 1, true = pachy_M1, false = NA),
+    CCT_M2 = if_else(is.dmek == 1, true = pachy_M2, false = NA),
+    CCT_M3 = if_else(is.dmek == 1, true = pachy_M3, false = NA),
+    CCT_M6 = if_else(is.dmek == 1, true = pachy_M6, false = NA),
+    CCT_Y1 = if_else(is.dmek == 1, true = pachy_Y1, false = NA), 
+    CCT_Y2 = if_else(is.dmek == 1, true = pachy_Y2, false = NA),
+    
+    # Variables only for DSAEK
+    CGT_D8 = if_else(is.dmek == 0, true = pachy_D8, false = NA),
+    CGT_D15 = if_else(is.dmek == 0, true = pachy_D15, false = NA),
+    # CGT_M1 = if_else(is.dmek == 0, true = pachy_M1, false = NA),  # data not available for this
+    CGT_M1 = if_else(is.dmek == 0, true = pachy_M2, false = NA),
+    CGT_M3 = if_else(is.dmek == 0, true = pachy_M3, false = NA),
+    CGT_M6 = if_else(is.dmek == 0, true = pachy_M6, false = NA),
+    CGT_Y1 = if_else(is.dmek == 0, true = pachy_Y1, false = NA),
+    CGT_Y2 = if_else(is.dmek == 0, true = pachy_Y2, false = NA)
+  ) |> 
+  select(-one_of(c("pachy_D8", "pachy_D15", "pachy_M1", "pachy_M2","pachy_M3", "pachy_M6",
+                   "pachy_Y1", "pachy_Y2")))
 ```
 
 
