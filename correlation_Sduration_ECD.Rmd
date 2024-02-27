@@ -175,7 +175,7 @@ my_PCA <- function(cormat)
     coord_flip()
   
   return( list(res_pca = res_pca, plot_scree = plot_scree, 
-               PCA12 = PCA12, cor.factors = cor.factors,
+               PCA12_ellipses = PCA12, cor.factors = cor.factors,
                PlotLoadings = PlotLoadings) )
 }
 ```
