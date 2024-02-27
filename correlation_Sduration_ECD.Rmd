@@ -1,0 +1,114 @@
+---
+params:
+  sizeCut: 130
+  includeDMEK: TRUE
+  includeDSAEK: TRUE
+  includeUT_DSAEK: TRUE
+  
+header-includes:
+  - \newcommand\latexcode[1]{#1}
+title: "Correlation analysis of Surgery duration and ECD"
+author: "Alexis Derumigny"
+date: "`r Sys.Date()`"
+output: 
+  bookdown::word_document2:
+    toc: true
+    fig_caption: true
+
+knit: |
+  (function(input, ...) {
+    rmarkdown::render(
+      input,
+      output_file = paste0(
+        xfun::sans_ext(input), '-', Sys.Date(), '.docx'
+      ),
+      envir = globalenv()
+    )
+  })
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+
+# Loading packages
+library(readxl)
+library(tidyverse)
+library(ggforce)
+library(ade4)
+library(adegraphics)
+
+# Loading cleaning functions
+myFolder = here::here()
+source("functions_cleaning.R")
+```
+
+# Introduction
+
+```{r, echo=FALSE, results='asis', label="preparing the data frame"}
+result = knitr::knit_expand(file = "preparing_dataframe.Rmd")
+
+if (interactive()){
+  result_ = knitr::knit(
+    text = result, envir = globalenv(), quiet = TRUE)
+} else {
+  result_ = knitr::knit_child(
+    text = result, envir = globalenv(), quiet = TRUE)
+}
+
+cat(result_, sep = '\n')
+```
+
+
+```{r}
+myVariables = c("ECD_M6", "ECD_Y1", "ECD_Y2", "surgery.duration")
+
+X = totalData.frame |>
+  filter(is.dmek == 1) |>
+  select(all_of(myVariables)) |>
+  as.data.frame() |>
+  as.matrix.data.frame()
+
+corMatrix = cor(X, use = "pairwise.complete.obs")
+```
+
+
+# Correlation matrix
+
+Here is the correlation matrix of the 4 variables:
+
+```{r}
+corrplot::corrplot(corMatrix, method = "color", col = corrplot::COL2('PiYG'), 
+                   addCoef.col = 'black')
+```
+
+
+And here is the corresponding matrix with the p-values associated to the test
+that a given correlation is significantly different from 0 or not.
+
+```{r}
+testRes = corrplot::cor.mtest(X, conf.level = 0.95)
+corrplot::corrplot(corMatrix, p.mat = testRes$p, insig = 'p-value', sig.level = -1, 
+                   col = corrplot::COL2('PiYG'), method = "color",
+                   number.digits = 4)
+```
+
+
+# Correlation scatterplot
+
+
+On the following figure, you can see:
+
+- the scatterplots of each pair of variables;
+- the estimated correlations with the stars to show the significance (or lack thereof);
+- as a bonus: the estimated density of each variable by kernel smoothing
+(in the diagonal facets).
+
+```{r, fig.height=8, fig.width=8}
+GGally::ggpairs(X,
+                progress = FALSE # No progress bar
+) + theme(panel.spacing = unit(0.18, "inches"))
+```
+
+
+
+
