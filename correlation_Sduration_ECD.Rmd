@@ -111,4 +111,108 @@ GGally::ggpairs(X,
 
 
 
+```{r function for PCA}
+# Removing unnecessary columns
+Xnorm = matrix(nrow = nrow(X), ncol = ncol(X))
+for (j in 1:ncol(X)){
+  Xnorm[, j] = (X[, j] - mean(X[, j], na.rm = TRUE)) / sd(X[, j], na.rm = TRUE)
+}
+
+
+my_PCA <- function(cormat)
+{
+  # 1- Diagonalization
+  res_pca = eigen(cormat)
+  
+  # 2- Scree plot
+  plot_scree = ggplot(data=NULL,
+                      aes(x=1:length(res_pca$values),
+                          y=res_pca$values/sum(res_pca$values))) +
+    # geom_point(size=2)+
+    geom_col()+
+    # labs(title="Scree plot of the scaled PCA") +
+    xlab("Principal components") +
+    ylab("Eigenvalue / Sum(eigenvalues)")
+  
+  # 3- Biplot 
+  vecpropres_1 = res_pca$vectors[,1]
+  vecpropres_2 = res_pca$vectors[,2]
+  vecpropres_12 = cbind(vecpropres_1, vecpropres_2)
+  obs_firstplane = Xnorm %*% vecpropres_12
+  
+  PCA12 <- ggplot() + geom_point(aes(x = obs_firstplane[,1],
+                                     y = obs_firstplane[,2]), size = 1.5) +
+    theme(text=element_text(size=14),
+          axis.text = element_text(size=10) ) +
+    theme(panel.grid.minor = element_line(size = 1)) +
+    theme(legend.spacing.y = unit(0.01, "npc"),
+          legend.text =
+            element_text(margin = margin(3,0,3,0))) +
+    xlab("PC1") + ylab("PC2")
+  
+  
+  # 4- Correlation circle
+  val_plus = res_pca$values * as.numeric(res_pca$values >= 0)
+  
+  cor.factors <- NULL
+  for (j in 1:ncol(X)){
+    rf <- sqrt(val_plus[j])*res_pca$vectors[,j]
+    cor.factors <- cbind(cor.factors,rf)
+  }
+  rownames(cor.factors) <- colnames(X)
+  colnames(cor.factors) <- paste("F",1:ncol(X),sep="")
+  
+  # 5- Factor loadings
+  DataFrameLoadings = data.frame(
+    Variable = factor(rep(colnames(X), times = 2),
+                      levels = sort(colnames(X), decreasing = TRUE)),
+    Loadings = c(cor.factors[,1], cor.factors[,2]),
+    Factor = rep(c("PC1","PC2"), each = ncol(X))
+  )
+  PlotLoadings = ggplot(DataFrameLoadings) +
+    geom_col(aes(x = Variable, y = Loadings)) +
+    facet_grid(cols = vars(Factor)) +
+    coord_flip()
+  
+  return( list(res_pca = res_pca, plot_scree = plot_scree, 
+               PCA12 = PCA12, cor.factors = cor.factors,
+               PlotLoadings = PlotLoadings) )
+}
+```
+
+
+
+```{r, echo=FALSE, results='asis', label="all PCAs"}
+out = list()
+listPCA = list()
+
+i = 1
+listPCA[[i]] = my_PCA(cormat = corMatrix)
+
+nameAnalysis.short = "Surgery duration and ECD"
+
+nameSection = "# PCA for Surgery duration and ECD"
+
+# nameScreePlot = paste("'Scree plot -", nameAnalysis.short, "'")
+
+result = knitr::knit_expand(file = "multiple-PCA-section.Rmd")
+out[[i]] = result
+  
+
+if (interactive()){
+  res <- lapply(out, function(x) {
+    knitr::knit(
+      text = x, envir = globalenv(), quiet = TRUE
+    )
+  })
+} else {
+  res <- lapply(out, function(x) {
+    knitr::knit_child(
+      text = x, envir = globalenv(), quiet = TRUE
+    )
+  })
+}
+cat(unlist(res), sep = '\n')
+```
+
 
