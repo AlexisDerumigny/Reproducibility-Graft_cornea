@@ -67,16 +67,16 @@ X = totalData.frame |>
   select(all_of(myVariables)) |>
   as.data.frame() |>
   as.matrix.data.frame()
-
-corMatrix = cor(X, use = "pairwise.complete.obs")
 ```
 
 
-# Correlation matrix
+# Pearson's Correlation matrix
 
-Here is the correlation matrix of the 5 variables:
+Here is the Pearson's correlation matrix of the 5 variables:
 
 ```{r}
+corMatrix = cor(X, use = "pairwise.complete.obs")
+
 corrplot::corrplot(corMatrix, method = "color", col = corrplot::COL2('PiYG'), 
                    addCoef.col = 'black')
 ```
@@ -93,13 +93,36 @@ corrplot::corrplot(corMatrix, p.mat = testRes$p, insig = 'p-value', sig.level = 
 ```
 
 
+# Spearman's Correlation matrix
+
+Here is the Spearman's correlation matrix of the 5 variables:
+
+```{r}
+corMatrix = cor(X, use = "pairwise.complete.obs", method = "spearman")
+
+corrplot::corrplot(corMatrix, method = "color", col = corrplot::COL2('PiYG'), 
+                   addCoef.col = 'black')
+```
+
+
+And here is the corresponding matrix with the p-values associated to the test
+that a given correlation is significantly different from 0 or not.
+
+```{r}
+testRes = corrplot::cor.mtest(X, conf.level = 0.95, method = "spearman")
+corrplot::corrplot(corMatrix, p.mat = testRes$p, insig = 'p-value', sig.level = -1, 
+                   col = corrplot::COL2('PiYG'), method = "color",
+                   number.digits = 4)
+```
+
+
 # Correlation scatterplot
 
 
 On the following figure, you can see:
 
 - the scatterplots of each pair of variables;
-- the estimated correlations with the stars to show the significance (or lack thereof);
+- the estimated ¨Pearson's correlations with the stars to show the significance (or lack thereof);
 - as a bonus: the estimated density of each variable by kernel smoothing
 (in the diagonal facets).
 
