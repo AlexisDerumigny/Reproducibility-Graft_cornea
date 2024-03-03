@@ -52,6 +52,8 @@ rsconnect/
 # Word output
 *.doc
 *.docx
+# Picture output
+*.jpg
 
 # All data
 data/

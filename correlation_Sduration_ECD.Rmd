@@ -103,10 +103,14 @@ On the following figure, you can see:
 - as a bonus: the estimated density of each variable by kernel smoothing
 (in the diagonal facets).
 
-```{r, fig.height=8, fig.width=8}
-GGally::ggpairs(totalData.frame[, myVariables],
-                progress = FALSE # No progress bar
-) + theme(panel.spacing = unit(0.18, "inches"))
+```{r, fig.height=9, fig.width=9}
+myplot = GGally::ggpairs(totalData.frame[, myVariables],
+                         progress = FALSE # No progress bar
+) + theme(panel.spacing = unit(0.1, "inches"))
+
+print(myplot)
+
+ggsave("plot_Sduration_ECD.jpg", plot = myplot, width = 2500, height = 2500, units = "px")
 ```
 
 
