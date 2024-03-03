@@ -60,7 +60,7 @@ cat(result_, sep = '\n')
 
 
 ```{r}
-myVariables = c("ECD_M6", "ECD_Y1", "ECD_Y2", "surgery.duration")
+myVariables = c("ECD.preop", "ECD_M6", "ECD_Y1", "ECD_Y2", "surgery.duration")
 
 X = totalData.frame |>
   filter(is.dmek == 1) |>
@@ -74,7 +74,7 @@ corMatrix = cor(X, use = "pairwise.complete.obs")
 
 # Correlation matrix
 
-Here is the correlation matrix of the 4 variables:
+Here is the correlation matrix of the 5 variables:
 
 ```{r}
 corrplot::corrplot(corMatrix, method = "color", col = corrplot::COL2('PiYG'), 
@@ -104,7 +104,7 @@ On the following figure, you can see:
 (in the diagonal facets).
 
 ```{r, fig.height=8, fig.width=8}
-GGally::ggpairs(X,
+GGally::ggpairs(totalData.frame[, myVariables],
                 progress = FALSE # No progress bar
 ) + theme(panel.spacing = unit(0.18, "inches"))
 ```
