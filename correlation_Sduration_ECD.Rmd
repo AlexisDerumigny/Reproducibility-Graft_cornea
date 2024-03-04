@@ -133,7 +133,8 @@ myplot = GGally::ggpairs(totalData.frame[, myVariables],
 
 print(myplot)
 
-ggsave("plot_Sduration_ECD.jpg", plot = myplot, width = 2500, height = 2500, units = "px")
+ggsave(filename = paste0("plot_Sduration_ECD", "-", Sys.Date(), ".jpg"),
+       plot = myplot, width = 2500, height = 2500, units = "px")
 ```
 
 
