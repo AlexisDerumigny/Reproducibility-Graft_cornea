@@ -137,6 +137,22 @@ ggsave(filename = paste0("plot_Sduration_ECD", "-", Sys.Date(), ".jpg"),
        plot = myplot, width = 2500, height = 2500, units = "px")
 ```
 
+# Pairwise scatterplots
+
+```{r}
+ggplot(totalData.frame) +
+  geom_point(aes(x = surgery.duration, y = ECD.preop))
+
+ggplot(totalData.frame) +
+  geom_point(aes(x = surgery.duration, y = ECD_M6))
+
+ggplot(totalData.frame) +
+  geom_point(aes(x = surgery.duration, y = ECD_Y1))
+
+ggplot(totalData.frame) +
+  geom_point(aes(x = surgery.duration, y = ECD_Y2))
+```
+
 
 
 ```{r function for PCA}
