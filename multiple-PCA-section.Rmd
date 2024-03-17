@@ -4,7 +4,7 @@
 
  
 ```{r}
-eig_val = listPCA[[i]]$res_pca$values
+eig_val = listPCA[[{{i}}]]$res_pca$values
 eig_val_norm = eig_val / sum(eig_val)
 cat("\n The total variation explained by PC1 is: ",
     eig_val_norm[1] * 100, " %. \n")
