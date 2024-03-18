@@ -351,19 +351,21 @@ id_selected_PCA = which(df_normalizations$PACHY & df_normalizations$BSCVA & df_n
 
 PCA = listPCA[[id_selected_PCA]]$res_pca
 
-selected_columns = c("is.dmek", "FECD", "is.ut_dsaek", "is.dsaek", "PBK",
-                     "preoperative.VA", "VA_logD8", "VA_logD15", 
-                     "VA_logM1", "VA_logM3", "VA_logM6","VA_logM12", "VA_logM24",
-                     variablesPACHY)
+list_selected_columns = list(
+  c("is.dmek", "FECD", "is.ut_dsaek", "is.dsaek", "PBK") ,
+  
+  c("is.dmek", "FECD", "is.ut_dsaek", "is.dsaek", "PBK",
+    "Triple.DMEK") ,
+  
+  c("is.dmek", "FECD", "is.ut_dsaek", "is.dsaek", "PBK",
+    "Triple.DMEK", "first.surgery") ,
+  
+  c("is.dmek", "FECD", "is.ut_dsaek", "is.dsaek", "PBK",
+    "Triple.DMEK", "first.surgery", "patient.age")
+)
 
 PC1 <- PCA$vectors[,1]
 names(PC1) <- colnames(X)
-
-which_columns = colnames(X) %in% selected_columns
-
-TotalVar = var(Xpred %*% PC1)
-ExplVar = var(Xpred[, which_columns] %*% PC1[which_columns])
-
   
 # Correction of PC1 for the normalization
 PC1 = PC1 * modifNormPACHY * modifNormVA * modifNormECD
@@ -378,24 +380,33 @@ Xpred = Xnorm
 #   }
 # }
 
+for (i_selected_columns in 1:length(list_selected_columns))
 {
-cat("For the variables: ")
-cat(paste0(selected_columns, sep  = " "))
-cat("\nThe Total variation of PC1 is: ")
-cat(TotalVar)
-cat(". The Explained variation of PC1 is: ")
-cat(ExplVar)
-cat("  which is ")
-cat(ExplVar / TotalVar * 100)
-cat("%")
+  selected_columns = list_selected_columns[[i_selected_columns]]
+  
+  which_columns = colnames(X) %in% selected_columns
+  
+  TotalVar = var(Xpred %*% PC1)
+  ExplVar = var(Xpred[, which_columns] %*% PC1[which_columns])
+  
+  {
+  cat("For the variables: ")
+  cat(paste0(selected_columns, sep  = " "))
+  cat("\nThe Total variation of PC1 is: ")
+  cat(TotalVar)
+  cat(". The Explained variation of PC1 is: ")
+  cat(ExplVar)
+  cat("  which is ")
+  cat(ExplVar / TotalVar * 100)
+  cat("%.\n\n")
+  }
 }
 ```
 
 
 ```{r}
-selected_columns = c("ECD_D15", "ECD_D8", "ECD_M1", "ECD_M2", "ECD_M3", "ECD_M6", 
-                     "ECD_Y1", "ECD_Y2", "ECD_Y3", "ECD_Y4", "ECD_Y5", "gaz.sf6",
-                     "graft.with.double.marking", "graft.detachment")
+selected_columns = c("average.keratometry", "k1", "k2",
+                     "graft.detachment", "rebbubling")
 
 PC2 <- PCA$vectors[,2]
 names(PC2) <- colnames(X)
