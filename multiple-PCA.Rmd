@@ -359,30 +359,31 @@ selected_columns = c("is.dmek", "FECD", "is.ut_dsaek", "is.dsaek", "PBK",
 PC1 <- PCA$vectors[,1]
 names(PC1) <- colnames(X)
 
-Xpred = X
-
-for (i in 1:nrow(X)) {
-  for (j in 1:ncol(X)) {
-    if (is.na(Xpred[i,j])){
-      Xpred[i,j] = 0
-    }
-  }
-}
-
-# # Correction of PC1 for the normalization
-# PC1 = PC1 * modifNormPACHY * modifNormVA * modifNormECD
-
 which_columns = colnames(X) %in% selected_columns
 
 TotalVar = var(Xpred %*% PC1)
 ExplVar = var(Xpred[, which_columns] %*% PC1[which_columns])
 
+  
+# Correction of PC1 for the normalization
+PC1 = PC1 * modifNormPACHY * modifNormVA * modifNormECD
+
+Xpred = Xnorm
+# Xpred = X
+# for (i in 1:nrow(X)) {
+#   for (j in 1:ncol(X)) {
+#     if (is.na(Xpred[i,j])){
+#       Xpred[i,j] = 0
+#     }
+#   }
+# }
+
 {
 cat("For the variables: ")
 cat(paste0(selected_columns, sep  = " "))
-cat("\nThe Total variance of PC1 is: ")
+cat("\nThe Total variation of PC1 is: ")
 cat(TotalVar)
-cat(". The Explained variance of PC1 is: ")
+cat(". The Explained variation of PC1 is: ")
 cat(ExplVar)
 cat("  which is ")
 cat(ExplVar / TotalVar * 100)
@@ -400,7 +401,7 @@ PC2 <- PCA$vectors[,2]
 names(PC2) <- colnames(X)
 
 # Correction of PC1 for the normalization
-# PC2 = PC2 * modifNormPACHY * modifNormVA * modifNormECD
+PC2 = PC2 * modifNormPACHY * modifNormVA * modifNormECD
 
 which_columns = colnames(X) %in% selected_columns
 
@@ -413,9 +414,9 @@ ExplVar = var(Xpred[, which_columns] %*% PC2[which_columns])
 {
 cat("For the variables: ")
 cat(paste0(selected_columns, sep  = " "))
-cat("\nThe Total variance of PC2 is: ")
+cat("\nThe Total variation of PC2 is: ")
 cat(TotalVar)
-cat(". The Explained variance of PC2 is: ")
+cat(". The Explained variation of PC2 is: ")
 cat(ExplVar)
 cat("  which is ")
 cat(ExplVar / TotalVar * 100)
